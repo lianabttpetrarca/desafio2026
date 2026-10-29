@@ -1,0 +1,191 @@
+---
+title: "Solução do Desafio"
+author: "Liana Petrarca"
+format: 
+  html:
+    toc: true
+    toc-location: left
+    theme: cosmo
+    embed-resources: true
+lang: pt
+editor: source
+---
+
+### 1. Preparação do Ambiente
+
+```{r setup, message=FALSE, warning=FALSE}
+library(rio)
+library(tidyverse)
+
+# importar os 4 arquivos (tem que estar na pasta do projeto)
+lab <- import("laboratorio.xlsx")
+capsulas <- import("capsulas.xlsx")
+graos <- import("graos.csv")
+mmg <- import("mmg.xlsx")
+
+```
+
+### 2. Análise e Consolidação por Planta
+
+```{r}
+# GRAOS 
+# o numero da planta está no comeco do img, antes do primeiro "_"
+# separar em duas colunas e descartar o resto
+graos_planta <- 
+  graos |>
+  separate(img, into = c("IMG", "resto"), sep = "_", extra = "merge") |>
+  mutate(IMG = as.numeric(IMG)) |>
+  group_by(IMG) |>
+  summarise(NG = n(),
+            CG = mean(length),
+            LG = mean(width))
+graos_planta
+
+# CAPSULAS
+# cada linha é uma capsula, entao é só contar as linhas de cada planta
+caps_planta <- 
+  capsulas |>
+  separate(img, into = c("IMG", "resto"), sep = "_", extra = "merge") |>
+  mutate(IMG = as.numeric(IMG)) |>
+  group_by(IMG) |>
+  summarise(NC = n())
+
+caps_planta
+
+# JUNTAR com o laboratorio pela coluna IMG
+planta <- 
+  lab |>
+  left_join(graos_planta, by = "IMG") |>
+  left_join(caps_planta, by = "IMG")
+
+
+```
+
+
+### 3. Análise e Consolidação por Genótipo
+
+```{r}
+
+# media de cada genotipo
+# tem planta sem dado (NA), por isso o na.rm = TRUE
+genotipo <- 
+  planta |>
+  select(-IMG, -PLANTA) |>
+  group_by(TIPO, GEN) |>
+  summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)),
+            .groups = "drop")
+
+# mmg tem uma linha por genotipo, so preciso de TIPO, GEN e mmg
+mmg_gen <- 
+  mmg |>
+  select(TIPO, GEN, mmg) |>
+  rename(MMG = mmg)
+
+genotipo <- 
+  genotipo |>
+  left_join(mmg_gen, by = c("TIPO", "GEN"))
+
+genotipo
+
+# salvar a tabela final
+export(genotipo, "dados_genotipo.xlsx")
+
+```
+
+### 4. Exploração e Visualização
+
+####  Como a altura da planta se relaciona com o número de cápsulas?
+
+```{r ap_nc, warning=FALSE}
+ggplot(genotipo, aes(x = AP, y = NC)) +
+  geom_point(aes(color = TIPO), size = 2) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  scale_color_manual(values = c("goldenrod", "brown")) +
+  labs(x = "Altura de planta (cm)",
+       y = "Número de cápsulas")
+
+# correlacao
+cor(genotipo$AP, genotipo$NC, use = "complete.obs")
+```
+
+#### Altura de planta: DOURADA x MARROM
+
+```{r ap_tipo, warning=FALSE}
+ggplot(genotipo, aes(x = TIPO, y = AP)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.1, alpha = 0.5) +
+  stat_summary(fun = mean,
+               geom = "point",
+               shape = 17,
+               size = 3,
+               color = "red") +
+  labs(x = "Tipo de linhaça",
+       y = "Altura de planta (cm)")
+
+# media de altura de cada tipo
+genotipo |>
+  group_by(TIPO) |>
+  summarise(AP_media = mean(AP, na.rm = TRUE),
+            AP_dp = sd(AP, na.rm = TRUE))
+```
+
+#### Quais os top 5 genótipos para produção de grãos (MG) de cada tipo de linhaça?
+
+```{r top5}
+top5 <- 
+  genotipo |>
+  filter(!is.na(MG)) |>
+  group_by(TIPO) |>
+  slice_max(order_by = MG, n = 5) |>
+  ungroup()
+
+top5 |>
+  select(TIPO, GEN, MG)
+
+ggplot(top5, aes(x = reorder(GEN, MG), y = MG, fill = TIPO)) +
+  geom_col() +
+  facet_wrap(~TIPO, scales = "free_x") +
+  scale_fill_manual(values = c("goldenrod", "brown")) +
+  labs(x = "Genótipo",
+       y = "Massa de grãos por planta (g)") +
+  theme(legend.position = "none")
+```
+
+#### Calcule o diferencial de seleção, ou seja, a diferença da média geral e a média dos top 5 genótipos, para cada tipo de linhaça, representando os valores em um gráfico de barras.
+
+```{r ds}
+# media geral de cada tipo
+media_geral <- 
+  genotipo |>
+  group_by(TIPO) |>
+  summarise(geral = mean(MG, na.rm = TRUE))
+
+# media dos 5 selecionados
+media_top5 <- 
+  top5 |>
+  group_by(TIPO) |>
+  summarise(selecionados = mean(MG))
+
+# DS = media dos selecionados - media geral
+ds <- 
+  media_geral |>
+  left_join(media_top5, by = "TIPO") |>
+  mutate(DS = selecionados - geral,
+         DS_porc = DS / geral * 100)
+
+ds
+
+ggplot(ds, aes(x = TIPO, y = DS, fill = TIPO)) +
+  geom_col(width = 0.5) +
+  geom_text(aes(label = paste0(round(DS, 2), " g (+", round(DS_porc, 1), "%)")),
+            vjust = -0.5) +
+  scale_fill_manual(values = c("goldenrod", "brown")) +
+  labs(x = "Tipo de linhaça",
+       y = "Diferencial de seleção para MG (g)") +
+  theme(legend.position = "none")
+```
+
+## Conclusão
+
+
+  Juntando as quatro planilhas ficou uma tabela com 120 genótipos (incluindo as duas populações GPOP1 e GPOP2), mas 27 deles não têm dados de laboratório (NA). A altura de planta não mostrou relação com o número de cápsulas, a correlação ficou praticamente zero (r = -0,07), então plantas mais altas não necessariamente produzem mais cápsulas. Já entre os tipos teve diferença: os genótipos MARROM foram em média mais altos (88,7 cm contra 77,9 cm do que os genótipos do tipo DOURADA) e também bem mais variáveis. Para massa de grãos por planta (MG) os melhores do tipo DOURADA foram G5, G56, G23, G18 e G1, e os melhores MARROM foram G4, G2, G223, G63 e G12. As médias gerais dos dois tipos são parecidas (cerca de 2,2 a 2,3 g), mas o diferencial de seleção foi maior no tipo MARROM (3,62 g, +164%) do que no tipo DOURADA (2,03 g, +89%), indicando que existe mais variabilidade para selecionar dentro do tipo MARROM.
