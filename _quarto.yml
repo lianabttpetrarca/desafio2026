@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: docs 
+  output-dir: docs
 
 website:
   title: "Desafio R 2026"
@@ -10,7 +10,8 @@ website:
         text: Home
       - Orientações.qmd
       - Solução.qmd
-    
+      - TESTe.qmd
+
 
 format:
   html:
