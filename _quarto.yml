@@ -11,7 +11,7 @@ website:
         text: Início
       - href: orientacoes.qmd
         text: Orientações
-      - text: Aulas
+      - text: Material de Apoio
         menu:
           - href: aula1_intro.qmd
             text: "Aula 1 – Introdução"
@@ -31,7 +31,7 @@ website:
 format:
   html:
     theme:
-      light: [cosmo, brand]
+      light: [cosmo, brand, custom.scss]
       dark: [darkly, brand]
     css: styles.css
     toc: true
@@ -42,4 +42,5 @@ format:
     lang: pt
 
 editor: source
+
 

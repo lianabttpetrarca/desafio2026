@@ -1,0 +1,38 @@
+---
+title: "Desafio R 2026"
+subtitle: "Entrega de Liana Petrarca"
+title-block-banner: "#2d6a4f"
+title-block-banner-color: "#ffffff"
+page-layout: full
+toc: false
+---
+
+Esta página reúne a entrega do desafio de R proposto pelo professor: as orientações recebidas e a solução desenvolvida, com o código completo.
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### [📋 Orientações](orientacoes.qmd)
+O enunciado do desafio e o que foi pedido.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.aula-card}
+### [✅ Solução](solucao.qmd)
+A resolução do desafio, passo a passo, com código e resultados.
+:::
+:::
+
+:::
+
+## Material de apoio
+
+Scripts das aulas usados como base para a solução:
+
+- [Aula 1 – Introdução](aula1_intro.qmd)
+- [Aula 2 – Tipos de dados](aula_2_tipo_de_dados.qmd)
+- [Aula 3 – Dados](aula3_dados.qmd)
+- [Aula 5](aula5.qmd)
+- [Aula 6 – Mutação e resumo](AULA6.qmd)

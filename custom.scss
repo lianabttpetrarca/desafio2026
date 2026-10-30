@@ -1,0 +1,65 @@
+/*-- scss:defaults --*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap');
+
+// Paleta: verde-folha + coral pitanga
+$verde: #2d6a4f;
+$verde-claro: #d8f3dc;
+$coral: #e76f51;
+
+$primary: $verde;
+$link-color: $verde;
+$navbar-bg: $verde;
+$navbar-fg: #ffffff;
+$navbar-hl: $verde-claro;
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, sans-serif;
+$font-family-monospace: "JetBrains Mono", Menlo, monospace;
+$headings-font-weight: 700;
+
+$code-block-bg: #f6f8f7;
+$code-block-border-color: $coral;
+$code-block-border-left: 4px;
+
+/*-- scss:rules --*/
+
+// Títulos
+h1, h2 { color: $verde; }
+h2 {
+  border-bottom: 2px solid $verde-claro;
+  padding-bottom: .3rem;
+  margin-top: 2.2rem;
+}
+
+// Menu
+.navbar-title { font-weight: 700; letter-spacing: .2px; }
+
+// Blocos de código
+div.sourceCode {
+  border-radius: 10px;
+}
+
+// Cards da página inicial
+.aula-card {
+  height: 100%;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-top: 4px solid $coral;
+  border-radius: 14px;
+  background: #fff;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.aula-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(45, 106, 79, .15);
+}
+.aula-card h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  border: none;
+}
+.aula-card h3 a { text-decoration: none; }
+.aula-card p { margin-bottom: 0; color: #555; font-size: .95rem; }
+
+// Rodapé
+.nav-footer { font-size: .85rem; }
