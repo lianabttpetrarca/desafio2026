@@ -4,22 +4,42 @@ project:
 
 website:
   title: "Desafio R 2026"
+  page-navigation: true
   navbar:
     left:
       - href: index.qmd
-        text: Home
-      - Orientações.qmd
-      - Solução.qmd
-      - TESTe.qmd
-
+        text: Início
+      - href: orientacoes.qmd
+        text: Orientações
+      - text: Aulas
+        menu:
+          - href: aula1_intro.qmd
+            text: "Aula 1 – Introdução"
+          - href: aula_2_tipo_de_dados.qmd
+            text: "Aula 2 – Tipos de dados"
+          - href: aula3_dados.qmd
+            text: "Aula 3 – Dados"
+          - href: aula5.qmd
+            text: "Aula 5"
+          - href: AULA6.qmd
+            text: "Aula 6 – Mutação e resumo"
+      - href: solucao.qmd
+        text: Solução
+  page-footer:
+    center: "Desafio R 2026 · Liana Petrarca"
 
 format:
   html:
     theme:
-      - cosmo
-      - brand
+      light: [cosmo, brand]
+      dark: [darkly, brand]
     css: styles.css
     toc: true
+    toc-title: "Nesta página"
+    code-copy: true
+    code-tools: true
+    highlight-style: github
+    lang: pt
 
 editor: source
 

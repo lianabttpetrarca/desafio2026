@@ -1,0 +1,77 @@
+---
+title: "Aula 1: Introdução ao Rstudio"
+author: "Liana Petrarca"
+format: html
+---
+# Introdução ao Rstudio
+## Tipos de script
+
+## Incluindo código 
+
+```{r}
+numero <- 10
+```
+
+## Objetos 
+
+```{r}
+numero * 10 
+numero /4
+
+vetor <- c(40, 20, 60, 80)
+vetor * 10 
+vetor * numero 
+```
+
+## Funções 
+Criando uma função para calcular a mediana de um conjunto 
+```{r}
+
+x <- c(5, 10, 15, 8, 6, 40, 35, 10, 2, 4)
+
+minha_mediana <- function(x){
+  n <- length(x)
+  resto <- n %% 2 
+  #checar se é par ou impar 
+if(resto == 0){ 
+  #aqui a mediana é par 
+  xord <- sort(x)
+  centro <- xord[(n/2):(n/2+1)]
+  mean(centro)
+  
+} else{
+  #aqui vai ser mediana impar 
+  xord <- sort(x)
+  xord[(n+1)/2]
+}
+}
+# x é o único argumento da função
+minha_mediana(x)
+x <- c(1, 5, 7, 9, 10, 13, 15, 12, 17, 26,80)
+
+minha_mediana(x)
+
+# Função com 3 argumentos
+
+eleva <- function(x, potencia = 2, texto = "quadrado"){
+  resultado <- x ^ potencia 
+  if(length(x) ==1){
+    paste("O", texto, "de", x, "é", resultado)
+    
+    
+  } else { 
+    return(resultado)
+    
+    }
+  eleva(4)
+}
+
+
+
+```
+# Carregar pacotes 
+```{r}
+library(tidyverse)
+library(rio)
+```
+

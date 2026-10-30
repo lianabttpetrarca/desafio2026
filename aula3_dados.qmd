@@ -1,0 +1,129 @@
+---
+title: "Aula 3 - Dados"
+format: html
+---
+
+
+# Pacotes e dados 
+
+```{r}
+library(rio)
+library(tidyverse)
+
+#importar a primeira aba do excel 
+
+df1 <- import("examples_data.xlsx")
+
+#importar uma aba específica 
+feijao <- import("examples_data.xlsx", sheet = "feijao")
+
+graos <- import("graos.csv")
+
+#importar todas as abas de um excel 
+dados <- import_list("examples_data.xlsx")
+
+```
+# Dados messy (desarrumados)
+
+```{r}
+messy <- dados$messy 
+
+
+# 1. ARRUMAR NOMES ---------------------------------------------------
+# "b 1", "B2", "b.3" -> b1, b2, b3 (tudo minúsculo, sem espaço/ponto)
+
+names(messy) <- c("env", "gen", "b1", "b2", "b3")
+
+#OR
+
+messy <- dados$messy |>
+ rename_with(.fn = function(nomes){str_replace(tolower(nomes), pattern = "\\s|\\.","")})
+ 
+ 
+
+# Preencher os NAs
+messy <- fill(messy, env)
+
+
+
+#Transformar colunas em linhas 
+
+
+
+tidy <- pivot_longer(messy,
+                     cols = c(b1, b2, b3),
+                     names_to = "bloco",
+                     values_to = "valor") 
+                   
+tidy <- mutate(tidy, gen = factor(gen, levels = paste0("H", 1:13)))
+
+
+
+
+#Renomear a variável 
+
+library(dplyr)
+tidy <- rename(tidy, altura = valor)
+```
+
+#Exploração gráfica 
+##Histograma
+```{r}
+hitsbase <-
+ggplot(tidy, aes(x = altura)) + 
+  #limitar as colunas 
+  geom_histogram(bins = 10) +
+  #alterar os intervalos 
+  scale_x_continuous(breaks = seq(1.5, 3, by = 0.25))+
+  labs(x = "Altura de Planta (m)",
+       y = "Número de plantas")
+                
+#uma cor para cada ambiente 
+ggplot(tidy, aes(x = altura, fill = env)) + 
+  #limitar as colunas 
+  geom_histogram(bins = 10, alpha = 0.6) +
+  facet_wrap(~env)+
+  #alterar os intervalos 
+  scale_x_continuous(breaks = seq(1.5, 3, by = 0.25))+
+  #trocar a cor 
+  scale_fill_manual(values = c("blue", "forestgreen"))
+  labs(x = "Altura de Planta (m)",
+       y = "Número de plantas")
+
+# um painel para cada ambiente 
+hitsbase +
+facet_wrap(~env)
+```
+
+
+##Boxplot
+```{r}
+boxbase <-
+ggplot(tidy, aes(x = env, y = altura)) +
+  geom_boxplot()+
+  geom_jitter()+
+  stat_summary(fun = mean, 
+              geom = "point", 
+              shape = 17,
+              size = 3,
+              color = "red" )
+
+boxbase +
+  facet_wrap(~env)
+
+#um painel para cada hibrido e ambiente 
+ggplot(tidy, aes(y = altura))+
+  geom_boxplot() +
+  facet_grid(env~gen)+
+    theme_sub_axis_x(text = element_blank(),
+                     ticks = element_blank()) +
+    theme_sub_panel(grid.major.x = element_blank(),
+                    grid.minor.x = element_blank())
+
+ggsave("boxplot.jpg", 
+       width = 10,
+       height = 5)
+
+
+```
+
