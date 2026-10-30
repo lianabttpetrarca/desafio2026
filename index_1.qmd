@@ -1,13 +1,14 @@
 ---
-title: "Desafio R 2026"
-subtitle: "Entrega de Liana Petrarca"
+title: "Desafio Final"
+subtitle: "Análise integrada de genótipos de linhaça · Liana Petrarca"
 title-block-banner: "#2d6a4f"
 title-block-banner-color: "#ffffff"
 page-layout: full
 toc: false
+code-tools: false
 ---
 
-Esta página reúne a entrega do desafio de R proposto pelo professor: as orientações recebidas e a solução desenvolvida, com o código completo.
+Esta página reúne a entrega do desafio final de R: as orientações recebidas e a solução desenvolvida, com o código completo.
 
 ::: {.grid}
 
